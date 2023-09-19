@@ -32,16 +32,17 @@ require_once dirname( __FILE__ ) . '/includes/coderdojo-kata-meta-boxes.php';
 require_once dirname( __FILE__ ) . '/includes/coderdojo-kata-rewrite-rules.php';
 
 /** Custom Rewrite Tags */
-//require_once dirname( __FILE__ ) . '/includes/coderdojo-kata-rewrite-tags.php';
+require_once dirname( __FILE__ ) . '/includes/coderdojo-kata-rewrite-tags.php';
 
 /** Custom Taxonomies */
 require_once dirname( __FILE__ ) . '/includes/coderdojo-kata-taxonomies.php';
 
-/** Custom Terms */
-require_once dirname( __FILE__ ) . '/includes/coderdojo-kata-terms.php';
 
 /** Custom Terms */
 //require_once dirname( __FILE__ ) . '/includes/coderdojo-kata-list-sushi-cards.php';
+
+/** Custom Project List Table */
+require_once dirname( __FILE__ ) . '/classes/class-coderdojo-kata-sushi_deck-list-table.php';
 
 /** Custom List Table */
 require_once dirname( __FILE__ ) . '/classes/class-coderdojo-kata-sushi-card-list-table.php';
@@ -58,16 +59,17 @@ require_once dirname( __FILE__ ) . '/classes/class-coderdojo-kata-walker-sushi-c
  * @see https://developer.wordpress.org/block-editor/tutorials/block-tutorial/writing-your-first-block-type/
  */
 function coderdojo_kata_block_init() {
-	register_block_type_from_metadata( __DIR__ . '/src/code');
-	register_block_type_from_metadata( __DIR__ . '/src/hints');
-	register_block_type_from_metadata( __DIR__ . '/src/hint');
-	register_block_type_from_metadata( __DIR__ . '/src/ingredient');
-	register_block_type_from_metadata( __DIR__ . '/src/task');
+	register_block_type_from_metadata( __DIR__ . '/src/code' );
+	register_block_type_from_metadata( __DIR__ . '/src/hints' );
+	register_block_type_from_metadata( __DIR__ . '/src/hint' );
+	register_block_type_from_metadata( __DIR__ . '/src/ingredient' );
+	register_block_type_from_metadata( __DIR__ . '/src/task' );
 }
+
 add_action( 'init', 'coderdojo_kata_block_init' );
 
 function coderdojo_kata_setup() {
-	
+
 	// Add support for editor styles.
 	add_theme_support( 'editor-styles' );
 
@@ -76,24 +78,40 @@ function coderdojo_kata_setup() {
 	// Enqueue editor styles.
 	add_editor_style( $editor_stylesheet_path );
 }
+
 add_action( 'after_setup_theme', 'coderdojo_kata_setup' );
 
-function coderdojo_kata_enqueue_script() {   
-    wp_enqueue_script( 'sushi-cards_script', plugin_dir_url( __FILE__ ) . 'assets/js/index.js' );
+function coderdojo_kata_enqueue_script() {
+	wp_enqueue_script( 'sushi-cards_script', plugin_dir_url( __FILE__ ) . 'assets/js/index.js' );
 }
-add_action('wp_enqueue_scripts', 'coderdojo_kata_enqueue_script');
 
-add_action( 'enqueue_block_editor_assets', function() {
-    wp_enqueue_style( 'coderdojo-custom-block-editor-styles', plugin_dir_url( __FILE__ ) . 'assets/css/style-editor.css');
+add_action( 'wp_enqueue_scripts', 'coderdojo_kata_enqueue_script' );
+
+add_action( 'enqueue_block_editor_assets', function () {
+	wp_enqueue_style( 'coderdojo-custom-block-editor-styles', plugin_dir_url( __FILE__ ) . 'assets/css/style-editor.css' );
 	wp_enqueue_script( 'sushi-cards_editor__script', plugin_dir_url( __FILE__ ) . 'assets/js/editor-index.js' );
 	wp_localize_script( 'sushi-cards_editor__script', 'apfajax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
 } );
 
 
-
-define('APFSURL', WP_PLUGIN_URL."/".dirname( plugin_basename( __FILE__ ) ) );
-define('APFPATH', WP_PLUGIN_DIR."/".dirname( plugin_basename( __FILE__ ) ) );
-
+define( 'APFSURL', WP_PLUGIN_URL . "/" . dirname( plugin_basename( __FILE__ ) ) );
+define( 'APFPATH', WP_PLUGIN_DIR . "/" . dirname( plugin_basename( __FILE__ ) ) );
 
 
+function coderdojo_kata_activate() {
+	// Trigger our function that registers the custom post type plugin.
+	wp_insert_post(
+		array(
+			'menu_order'   => 2,
+			'post_excerpt' => 'Welcome to Kata, the CoderDojo community resource sharing platform! We provide a selection of resources that you can use in running or setting up your Dojo.',
+			'post_name'    => 'kata',
+			'post_status'  => 'publish',
+			'post_title'   => 'Kata',
+			'post_type'    => 'page',
+		)
+	);
+	// Clear the permalinks after the post type has been registered.
+	flush_rewrite_rules();
+}
 
+register_activation_hook( __FILE__, 'coderdojo_kata_activate' );

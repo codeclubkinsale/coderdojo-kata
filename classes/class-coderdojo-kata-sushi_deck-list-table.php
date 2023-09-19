@@ -7,7 +7,7 @@
  * @since CoderDojo 1.0
  */
 
-if ( ! class_exists( 'Sushi_Card_List_Table' ) ) {
+if ( ! class_exists( 'Project_List_Table' ) ) {
 	/**
 	 * CUSTOM PAGE WALKER
 	 * A custom walker for pages.
@@ -16,7 +16,7 @@ if ( ! class_exists( 'Sushi_Card_List_Table' ) ) {
 		require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
 	}
 
-	class Sushi_Card_List_Table extends WP_List_Table {
+	class Sushi_Deck_List_Table extends WP_List_Table {
 
 		var $items = array();
 		var $ID = 0;
@@ -57,11 +57,11 @@ if ( ! class_exists( 'Sushi_Card_List_Table' ) ) {
 
 		function prepare_items() {
 			//global $post;
-			$sushi_cards        = array();
-			$sushi_card_objects = get_posts( array(
+			$projects        = array();
+			$project_objects = get_posts( array(
 				'title_li'       => '',
 				'post_parent'    => $this->ID,
-				'post_type'      => 'sushi_card',
+				'post_type'      => 'sushi_deck',
 				'post_status'    => array( 'publish', 'pending', 'draft', 'future', 'private', 'inherit' ),
 				'orderby'        => 'menu_order',
 				'order'          => 'ASC',
@@ -69,18 +69,18 @@ if ( ! class_exists( 'Sushi_Card_List_Table' ) ) {
 				'echo'           => false,
 			) );
 
-			foreach ( $sushi_card_objects as $sushi_card_object ) {
+			foreach ( $project_objects as $project_object ) {
 				$card = array(
-					'ID'          => $sushi_card_object->ID,
-					'post_title'  => $sushi_card_object->post_title,
-					'post_parent' => $sushi_card_object->post_parent,
-					'order'       => $sushi_card_object->menu_order,
-					'post_status' => $sushi_card_object->post_status
+					'ID'          => $project_object->ID,
+					'post_title'  => $project_object->post_title,
+					'post_parent' => $project_object->post_parent,
+					'order'       => $project_object->menu_order,
+					'post_status' => $project_object->post_status
 				);
-				array_push( $sushi_cards, $card );
+				array_push( $projects, $card );
 			}
 
-			$this->items = $sushi_cards;
+			$this->items = $projects;
 
 			$columns               = $this->get_columns();
 			$hidden                = array();

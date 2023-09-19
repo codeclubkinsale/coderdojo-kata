@@ -10,113 +10,161 @@
  */
 
 function coderdojo_kata_register_menu_pages() {
-    
-    global $submenu;
-	
-    $software_link = array(
-        __( 'The Software Pad', 'coderdojo-kata' ),
-        'edit_posts',
-        'edit.php?post_type=sushi-deck&groups=software'
-    );
 
-    $hardware_link = array(
-        __( 'The Hardware Laboratory', 'coderdojo-kata' ),
-        'edit_posts',
-        'edit.php?post_type=sushi-deck&groups=hardware'
-    );
+	global $submenu;
 
-    $studio_link = array(
-        __( 'The Studio', 'coderdojo-kata' ),
-        'edit_posts',
-        'edit.php?post_type=sushi-deck&groups=studio'
-    );
+	$bento_boxes_link = array(
+		__( 'Bento Boxes', 'coderdojo-kata' ),
+		'edit_posts',
+		'edit.php?post_type=bento_box'
+	);
 
-    $arcade_link = array(
-        __( 'The Arcade', 'coderdojo-kata' ),
-        'edit_posts',
-        'edit.php?post_type=sushi-deck&groups=arcade'
-    );
+	$pathways_link = array(
+		__( 'Learning Pathways', 'coderdojo-kata' ),
+		'edit_posts',
+		'edit.php?post_type=sushi_shoe'
+	);
 
-    $other_link = array(
-        __( 'Other Resources', 'coderdojo-kata' ),
-        'edit_posts',
-        'edit.php?post_type=sushi-deck&groups=other'
-    );
+	$collections_link = array(
+		__( 'Collections', 'coderdojo-kata' ),
+		'edit_posts',
+		'edit-tags.php?taxonomy=collection&post_type=sushi_deck'
+	);
 
-    $submenu['edit.php?post_type=sushi-deck']=array(
-        0=>$software_link,
-        1=>$hardware_link,
-        2=>$studio_link,
-        3=>$arcade_link,
-        4=>$other_link,
-    ) + $submenu['edit.php?post_type=sushi-deck']; 
+	$projects_link = array(
+		__( 'Projects', 'coderdojo-kata' ),
+		'edit_posts',
+		'edit.php?post_type=sushi_deck'
+	);
 
-    unset($submenu['edit.php?post_type=sushi-deck'][10]);
+	$groups_link = array(
+		__( 'Groups', 'coderdojo-kata' ),
+		'edit_posts',
+		'edit-tags.php?taxonomy=sushi_group&post_type=sushi_deck'
+	);
+
+	$types_link = array(
+		__( 'Types', 'coderdojo-kata' ),
+		'edit_posts',
+		'edit-tags.php?taxonomy=sushi_type&post_type=sushi_deck'
+	);
+
+	$levels_link = array(
+		__( 'Levels', 'coderdojo-kata' ),
+		'edit_posts',
+		'edit-tags.php?taxonomy=sushi_level&post_type=sushi_deck'
+	);
+
+	$software_link = array(
+		__( 'The Software Pad', 'coderdojo-kata' ),
+		'edit_posts',
+		'edit.php?post_type=sushi_deck&sushi_group=software'
+	);
+
+	$hardware_link = array(
+		__( 'The Hardware Laboratory', 'coderdojo-kata' ),
+		'edit_posts',
+		'edit.php?post_type=sushi_deck&sushi_group=hardware'
+	);
+
+	$studio_link = array(
+		__( 'The Studio', 'coderdojo-kata' ),
+		'edit_posts',
+		'edit.php?post_type=sushi_deck&sushi_group=studio'
+	);
+
+	$arcade_link = array(
+		__( 'The Arcade', 'coderdojo-kata' ),
+		'edit_posts',
+		'edit.php?post_type=sushi_deck&sushi_group=arcade'
+	);
+
+	$other_link = array(
+		__( 'Other Resources', 'coderdojo-kata' ),
+		'edit_posts',
+		'edit.php?post_type=sushi_deck&sushi_group=other'
+	);
+
+	$submenu['edit.php?post_type=sushi_deck'] = array(
+													0 => $bento_boxes_link,
+													1 => $pathways_link,
+													2 => $projects_link,
+												) + $submenu['edit.php?post_type=sushi_deck'];
+
+	unset( $submenu['edit.php?post_type=sushi_deck'][5] );
+	unset( $submenu['edit.php?post_type=sushi_deck'][10] );
 
 }
+
 add_action( 'admin_menu', 'coderdojo_kata_register_menu_pages' );
- 
+
 /**
  * Fix Parent Admin Menu Item
  */
-function coderdojo_kata_parent_file( $parent_file ){
- 
-    global $current_screen;
-    global $submenu_file;
+function coderdojo_kata_parent_file( $parent_file ) {
 
-    if ( in_array( $current_screen->base, array( 'post', 'edit' ) ) && 'sushi-deck' == $current_screen->post_type && isset( $_REQUEST[ 'groups' ])) {
+	global $current_screen;
+	global $submenu_file;
 
-        $group_slug = get_query_var( 'groups' );
-        $group_term = get_term_by( 
-            'slug',
-            $group_slug,
-            'groups'
-        );
-        
-        if($group_term->parent == 0) {
-            $submenu_file = 'edit.php?post_type=sushi-deck&groups=' . $group_slug;
-        } else {
-            $secondary_group_term = get_term_by( 
-                'id',
-                $group_term->parent,
-                'groups'
-            );
-            $submenu_file = 'edit.php?post_type=sushi-deck&groups=' . $group_slug . '&groups=' . $secondary_group_term->slug;
-        }
-    }
-    return $parent_file;
+	if ( in_array( $current_screen->base, array(
+			'post',
+			'edit'
+		) ) && 'sushi_deck' == $current_screen->post_type && isset( $_REQUEST['sushi_group'] ) ) {
+
+		$group_slug = get_query_var( 'sushi_group' );
+		$group_term = get_term_by(
+			'slug',
+			$group_slug,
+			'sushi_group'
+		);
+
+		if ( $group_term->parent == 0 ) {
+			$submenu_file = 'edit.php?post_type=sushi_deck&sushi_group=' . $group_slug;
+		} else {
+			$secondary_group_term = get_term_by(
+				'id',
+				$group_term->parent,
+				'groups'
+			);
+			$submenu_file         = 'edit.php?post_type=sushi_deck&groups=' . $group_slug . '&groups=' . $secondary_group_term->slug;
+		}
+	}
+
+	return $parent_file;
 }
+
 add_filter( 'parent_file', 'coderdojo_kata_parent_file' );
 
-function coderdojo_kata_groups_filter($post_type ){
-    
-    if( $post_type !== 'sushi-deck' || !isset( $_REQUEST[ 'groups' ])){
-        return;
-    }
+function coderdojo_kata_groups_filter( $post_type ) {
 
-    $group_term = get_term_by( 
-        'slug',
-        $_REQUEST[ 'groups' ],
-        'groups'
-    );
+	if ( $post_type !== 'sushi_deck' || ! isset( $_REQUEST['groups'] ) ) {
+		return;
+	}
 
-    if ($group_term->parent != 0) {
-        return;
-    }
-    
-    $group_terms = coderdojo_kata_get_group_terms($group_term->term_id);?>
+	$group_term = get_term_by(
+		'slug',
+		$_REQUEST['groups'],
+		'groups'
+	);
 
-    <select name="groups" id="groups">
-        <option value="">All Groups</option>
-            <?php foreach ($group_terms as $term) {
-                echo '<option value="' . $term->slug . '">' . $term->name . '</option>';
-            }?> 
-    </select>
-    
+	if ( $group_term->parent != 0 ) {
+		return;
+	}
 
-    <?php
-    
+	$group_terms = coderdojo_kata_get_group_terms( $group_term->term_id ); ?>
+
+	<select name="groups" id="groups">
+		<option value="">All Groups</option>
+		<?php foreach ( $group_terms as $term ) {
+			echo '<option value="' . $term->slug . '">' . $term->name . '</option>';
+		} ?>
+	</select>
+
+
+	<?php
+
 }
-add_action('restrict_manage_posts','coderdojo_kata_groups_filter');
+
+add_action( 'restrict_manage_posts', 'coderdojo_kata_groups_filter' );
 
 
